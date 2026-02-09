@@ -1,0 +1,23 @@
+services:
+  worker:
+    build: .
+    container_name: rrhh_worker
+    restart: unless-stopped
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - TZ=America/Guatemala
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./sa.json:/run/secrets/sa.json:ro
+    command: ["python", "worker.py"]
+
+  scheduler:
+    build: .
+    container_name: rrhh_scheduler
+    restart: unless-stopped
+    environment:
+      - TZ=America/Guatemala
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./sa.json:/run/secrets/sa.json:ro
+    command: ["bash", "-lc", "while true; do python scheduler.py; sleep 120; done"]
